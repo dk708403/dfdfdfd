@@ -1584,3 +1584,297 @@ body::after {
   border-color: var(--accent-cyan);
   background: rgba(0, 242, 254, 0.08);
 }
+
+/* ==========================================================================
+   PILOT STATUS & AVAILABILITY PILL
+   ========================================================================== */
+.pilot-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #d1fae5;
+  font-size: 0.825rem;
+  font-family: var(--font-mono);
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+  max-width: 90%;
+}
+
+.pilot-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-emerald);
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pilot-pulse-dot::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  opacity: 0.6;
+  animation: pulseBeacon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseBeacon {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   REAL ESTATE DEDICATED SECTION
+   ========================================================================== */
+.re-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 3.5rem;
+}
+
+.re-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-normal);
+}
+
+.re-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-indigo));
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.re-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-bright);
+  box-shadow: 0 16px 40px -10px rgba(0, 242, 254, 0.15), 0 0 0 1px rgba(0, 242, 254, 0.25);
+}
+
+.re-card:hover::before {
+  opacity: 1;
+}
+
+.re-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.re-card-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 242, 254, 0.08);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+}
+
+.re-card-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+  background: rgba(0, 242, 254, 0.1);
+  border: 1px solid rgba(0, 242, 254, 0.25);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.re-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  line-height: 1.35;
+  color: var(--text-main);
+}
+
+.re-card-desc {
+  font-size: 0.925rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.re-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-dim);
+}
+
+.re-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.re-feature-item svg {
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+/* Real Estate Blueprint Download Banner */
+.re-guide-banner {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(8, 12, 23, 0.95));
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2.5rem;
+  align-items: center;
+  box-shadow: var(--shadow-card), 0 0 35px rgba(0, 242, 254, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.re-guide-banner::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.re-guide-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-emerald);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
+}
+
+.re-guide-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+  color: var(--text-main);
+}
+
+.re-guide-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  max-width: 680px;
+  line-height: 1.6;
+}
+
+.re-guide-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.re-guide-point {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.re-guide-point svg {
+  color: var(--accent-cyan);
+}
+
+/* ==========================================================================
+   PROFESSIONAL B2B SOCIAL CONNECTIONS
+   ========================================================================== */
+.b2b-social-container {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.b2b-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.6rem;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: var(--transition-fast);
+  backdrop-filter: blur(8px);
+}
+
+.b2b-social-btn svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-cyan);
+  transition: transform var(--transition-fast);
+}
+
+.b2b-social-btn:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 242, 254, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 242, 254, 0.15);
+  color: var(--accent-cyan);
+}
+
+.b2b-social-btn:hover svg {
+  transform: scale(1.15);
+}
+
+@media (max-width: 1024px) {
+  .re-grid {
+    grid-template-columns: 1fr;
+  }
+  .re-guide-banner {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+}

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initEmailCopy();
   initScrollSpy();
   initScrollReveal();
+  initGuideTracking();
 });
 
 /* ==========================================================================
@@ -267,43 +268,90 @@ const buildSpecs = {
   'lead-gen': {
     title: 'Lead Qualification & CRM Router Spec',
     tech: ['n8n', 'OpenAI GPT-4o', 'HubSpot API', 'Slack Webhooks'],
-    spec: `[SYSTEM ARCHITECTURE SPECIFICATION]
-Trigger: Inbound Webhook (Typeform / Webflow / Custom Form)
-├── Node 1: Webhook Payload Parser & Sanitizer
-├── Node 2: OpenAI Lead Scorer & Intent Classifier
-│   ├── Prompt: "Evaluate lead intent, budget range, and urgency."
-│   └── Output: JSON { intentScore: 94, budgetStatus: 'qualified' }
-├── Node 3: Router Branch
-│   ├── IF Qualified: Update HubSpot CRM + Dispatch Instant Calendar SMS
-│   └── IF Unqualified: Log to Nurture Email Sequence
-└── Node 4: Slack Real-time Alert Notification`
+    spec: `[SYSTEM ARCHITECTURE SPECIFICATION: LEAD QUALIFICATION & ROUTER]
+Trigger: Inbound Webhook (Typeform / Webflow / Zillow / Meta Ad Form)
+├── Step 1: Payload Sanitization & Deduplication
+│   └── Strips formatting, parses E.164 phone numbers, checks CRM existence
+├── Step 2: OpenAI GPT-4o Intent & Fit Classifier
+│   ├── Prompt Guardrail: "Evaluate budget tier, timeline urgency, decision authority."
+│   ├── JSON Schema Validation:
+│   │   {
+│   │     "intentScore": 94,
+│   │     "budgetQualified": true,
+│   │     "urgency": "high_30_days",
+│   │     "recommendedAction": "priority_calendar_invite"
+│   │   }
+├── Step 3: Conditional Routing Logic (n8n Switch)
+│   ├── [Branch A: Score >= 80]
+│   │   ├── Create / Update HubSpot Deal Record (Stage: Discovery Scheduled)
+│   │   ├── Send Instant SMS via Twilio with personalized booking link
+│   │   └── Trigger High-Priority Slack Channel Dispatch
+│   └── [Branch B: Score < 80]
+│       └── Enroll in automated email nurture campaign (Postmark / Mailchimp)
+└── Step 4: Full Execution Telemetry & Error Fallback Alerting`
   },
   'call-agent': {
     title: 'Voice AI Appointment Screener & Booker Spec',
     tech: ['Vapi.ai', 'Cal.com API', 'n8n', 'Twilio'],
-    spec: `[SYSTEM ARCHITECTURE SPECIFICATION]
-Trigger: Inbound Call / Form Callback Request
-├── Node 1: Voice AI Telephony Initialization (Vapi)
-│   ├── Persona: Conversational Assistant
-│   ├── Screening Protocol: Qualify project scope & budget
-│   └── Tool Calling: Query Live Cal.com Available Slots
-├── Node 2: Real-time Slot Reservation
-├── Node 3: Call Transcript & Sentiment Analysis
-│   └── Model: Summarizes call transcript into structured key takeaways
-└── Node 4: Calendar Invitation Dispatch + CRM Record Sync`
+    spec: `[SYSTEM ARCHITECTURE SPECIFICATION: VOICE AI PHONE AGENT]
+Trigger: Inbound Phone Call via Twilio SIP Trunk
+├── Step 1: Voice Engine Initialization (Vapi + ElevenLabs / Deepgram)
+│   ├── System Instructions: Professional Real Estate & Service Concierge
+│   ├── Latency Target: < 700ms voice-to-voice response
+│   └── Guardrails: Strict hallucination boundaries, polite fallback transfers
+├── Step 2: Real-time Slot Inspection (Cal.com API Tool Call)
+│   ├── Tool: check_calendar_slots(startDate, endDate, timezone)
+│   └── Agent proposes next 2 available times dynamically
+├── Step 3: Slot Reservation & Confirmation
+│   ├── Tool: book_calendar_appointment(name, phone, email, chosenTime)
+│   └── Cal.com dispatches Google Calendar invitation + SMS confirmation
+├── Step 4: Post-Call Pipeline (n8n Webhook)
+│   ├── Transcription: Deepgram / OpenAI Whisper transcription summary
+│   ├── Sentiment & Key Takeaway Extraction
+│   └── Automated CRM Contact Update + Agent Briefing Note`
   },
   'workflow-sync': {
     title: 'Omnichannel Ops & Onboarding Sync Spec',
     tech: ['n8n Cloud', 'Stripe Webhooks', 'Google Workspace', 'Notion API'],
-    spec: `[SYSTEM ARCHITECTURE SPECIFICATION]
-Trigger: Stripe Customer Checkout Completed
-├── Node 1: Stripe Event Signature Verification
-├── Node 2: Database / Workspace Record Provisioning (Notion / Postgres)
-├── Node 3: Automated Client Onboarding Kit Generation
-│   ├── Creates Shared Google Drive Folder Structure
-│   ├── Generates Client Access Portal Link
-│   └── Sends Welcome Email via Resend / Postmark API
-└── Node 4: Operations Channel Notification with Client Summary`
+    spec: `[SYSTEM ARCHITECTURE SPECIFICATION: OPS & CLIENT ONBOARDING SYNC]
+Trigger: Stripe Customer Checkout Completed (Signature Verified)
+├── Step 1: Stripe Event Signature Verification & JSON Extraction
+├── Step 2: Database / Workspace Record Provisioning
+│   ├── Generates Client Record in Postgres / Notion Database
+│   └── Assigns Unique Client ID & Dedicated Account Dashboard
+├── Step 3: Automated Client Asset Generation
+│   ├── Creates Shared Google Drive Folder Structure with Permissions
+│   ├── Generates Customized Welcome Onboarding Document
+│   └── Dispatches Transactional Welcome Email via Resend API
+└── Step 4: Internal Operations Channel Notification with Client Summary`
+  },
+  're-qualification': {
+    title: 'Real Estate Lead Qualification & Speed-to-Lead Spec',
+    tech: ['n8n', 'OpenAI GPT-4o', 'Follow Up Boss API', 'Twilio SMS'],
+    spec: `[SYSTEM ARCHITECTURE SPECIFICATION: REAL ESTATE INBOUND QUALIFIER]
+Trigger: Inbound Lead Webhook (Zillow, Realtor.com, Meta Ads, Website IDX)
+├── Step 1: Inbound Lead Normalization
+│   └── Speed-to-Lead target: Execution starts in < 3 seconds
+├── Step 2: AI Pre-Qualification & Intent Parsing
+│   ├── Extracts: Price range ($), Timeframe (30/60/90 days), Pre-approval, Target Zip codes
+│   └── Generates structured CRM tag set (e.g., "Buyer - Pre-Approved - $850k+")
+├── Step 3: Instant Two-Way SMS Outreach
+│   ├── Conversational SMS agent initiates warm intro: "Hi [Name], saw you were looking at [Address]..."
+│   └── Gathers remaining qualification details via conversational text
+└── Step 4: CRM Sync (Follow Up Boss / kvCORE / HubSpot) + Direct Agent Alert`
+  },
+  're-voice-screener': {
+    title: 'Real Estate Voice AI Listing Receptionist Spec',
+    tech: ['Vapi.ai', 'Retell AI', 'Cal.com API', 'Google Calendar'],
+    spec: `[SYSTEM ARCHITECTURE SPECIFICATION: 24/7 LISTING VOICE AGENT]
+Trigger: Inbound Call on Dedicated Yard Sign / Listing Phone Number
+├── Step 1: Voice AI Greeting & Listing Identification
+│   └── Recognizes caller dialed specific property number or asks for address
+├── Step 2: Knowledge Retrieval (RAG / Guarded Listing Sheet)
+│   └── Responds instantly to price, bedrooms, square feet, HOA, school district, open house
+├── Step 3: Tour / Showing Scheduling
+│   └── Direct integration with agent's Cal.com calendar to book buyer tour
+└── Step 4: Immediate SMS Summary to Listing Agent with caller details & audio recording`
   }
 };
 
@@ -313,17 +361,26 @@ function initExampleBuildModals() {
   const modalSpecBlock = document.getElementById('modalSpecBlock');
   const closeModalBtn = document.getElementById('closeModalBtn');
 
-  if (!modalOverlay) return;
+  if (!modalOverlay || !modalTitle || !modalSpecBlock) return;
+
+  // Set initial fallback content so it is NEVER blank or showing a broken loading string
+  const defaultBuild = buildSpecs['lead-gen'];
+  if (defaultBuild) {
+    modalTitle.textContent = defaultBuild.title;
+    modalSpecBlock.textContent = defaultBuild.spec;
+  }
 
   document.querySelectorAll('[data-build-id]').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       const buildId = btn.getAttribute('data-build-id');
-      const data = buildSpecs[buildId];
+      const data = buildSpecs[buildId] || buildSpecs['lead-gen'];
       if (data) {
         modalTitle.textContent = data.title;
         modalSpecBlock.textContent = data.spec;
         modalOverlay.classList.add('active');
         modalOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
       }
     });
   });
@@ -331,6 +388,7 @@ function initExampleBuildModals() {
   const closeModal = () => {
     modalOverlay.classList.remove('active');
     modalOverlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
   };
 
   if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
@@ -450,4 +508,54 @@ function initScrollReveal() {
   }, observerOptions);
 
   revealElements.forEach((el) => observer.observe(el));
+}
+
+/* ==========================================================================
+   8. Real Estate Guide PDF Download & Analytics Tracking
+   ========================================================================== */
+function initGuideTracking() {
+  const guideLinks = document.querySelectorAll('a[href*="real_estate_ai_agents_guide.pdf"], [data-track-guide]');
+  
+  guideLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const trackSource = link.getAttribute('data-track') || link.getAttribute('id') || 'unspecified_cta';
+      const urlParams = new URLSearchParams(window.location.search);
+      const campaignRef = urlParams.get('ref') || urlParams.get('utm_source') || urlParams.get('src') || 'direct';
+
+      const trackingPayload = {
+        name: 'pdf_guide_download',
+        data: {
+          asset: 'real_estate_ai_agents_guide.pdf',
+          source_cta: trackSource,
+          campaign_ref: campaignRef,
+          timestamp: new Date().toISOString(),
+          href: window.location.href
+        }
+      };
+
+      // Vercel Analytics custom event tracking
+      if (typeof window.va === 'function') {
+        try {
+          window.va('event', { 
+            name: 'download_real_estate_guide', 
+            source: trackSource,
+            ref: campaignRef 
+          });
+        } catch (err) {
+          console.debug('Vercel Analytics track attempt', err);
+        }
+      }
+
+      // Store in local telemetry for local verification
+      try {
+        const history = JSON.parse(localStorage.getItem('guide_downloads') || '[]');
+        history.push(trackingPayload);
+        localStorage.setItem('guide_downloads', JSON.stringify(history));
+      } catch (err) {
+        // Safe fallback
+      }
+
+      console.info(`[Analytics] Guide download initiated:`, trackingPayload);
+    });
+  });
 }
